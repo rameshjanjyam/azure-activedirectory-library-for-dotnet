@@ -155,7 +155,6 @@ namespace Microsoft.Identity.Core.Http
                 using (HttpResponseMessage responseMessage =
                     await client.SendAsync(requestMessage).ConfigureAwait(false))
                 {
-                    responseMessage.EnsureSuccessStatusCode();
                     HttpResponse returnValue = await CreateResponseAsync(responseMessage).ConfigureAwait(false);
                     returnValue.UserAgent = client.DefaultRequestHeaders.UserAgent.ToString();
                     return returnValue;
