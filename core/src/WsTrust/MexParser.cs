@@ -76,10 +76,7 @@ namespace Microsoft.Identity.Core.WsTrust
         {
             var httpResponse = await HttpRequest.SendGet( // It would potentially throw MsalServiceException
                 new UriBuilder(federationMetadataUrl).Uri, null, requestContext).ConfigureAwait(false);
-            using (var stream = new MemoryStream(Encoding.UTF8.GetBytes(httpResponse.Body)))
-            {
-                return XDocument.Load(stream, LoadOptions.None);
-            }
+            return XDocument.Parse(httpResponse.Body, LoadOptions.None);
         }
 
         internal static WsTrustAddress ExtractWsTrustAddressFromMex(XDocument mexDocument, UserAuthType userAuthType, RequestContext requestContext)
