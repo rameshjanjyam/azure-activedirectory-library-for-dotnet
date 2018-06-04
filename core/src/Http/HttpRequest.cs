@@ -45,6 +45,12 @@ namespace Microsoft.Identity.Core.Http
         }
 
         public static async Task<HttpResponse> SendPost(Uri endpoint, Dictionary<string, string> headers,
+            Dictionary<string, string> bodyParameters, RequestContext requestContext)
+        {
+            return await SendPost(endpoint, headers, new FormUrlEncodedContent(bodyParameters), requestContext).ConfigureAwait(false);
+        }
+
+        public static async Task<HttpResponse> SendPost(Uri endpoint, Dictionary<string, string> headers,
             HttpContent body, RequestContext requestContext)
         {
             return
@@ -149,6 +155,7 @@ namespace Microsoft.Identity.Core.Http
                 using (HttpResponseMessage responseMessage =
                     await client.SendAsync(requestMessage).ConfigureAwait(false))
                 {
+                    responseMessage.EnsureSuccessStatusCode();
                     HttpResponse returnValue = await CreateResponseAsync(responseMessage).ConfigureAwait(false);
                     returnValue.UserAgent = client.DefaultRequestHeaders.UserAgent.ToString();
                     return returnValue;
