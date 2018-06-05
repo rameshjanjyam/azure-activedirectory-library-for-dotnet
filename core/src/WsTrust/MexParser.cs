@@ -26,14 +26,11 @@
 //------------------------------------------------------------------------------
 
 using System;
-using System.IO;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Xml.Linq;
-using Microsoft.Identity.Client;
 using Microsoft.Identity.Core.Http;
-using System.Text;
 
 namespace Microsoft.Identity.Core.WsTrust
 {
