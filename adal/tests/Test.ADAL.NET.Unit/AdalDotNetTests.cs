@@ -696,7 +696,7 @@ namespace Test.ADAL.NET.Unit
             });
 
             //whitelisted authority
-            context = new AuthenticationContext(TestConstants.DefaultAuthorityCommonTenant, true);
+            context = new AuthenticationContext(TestConstants.DefaultAuthorityCommonTenant, true, new TokenCache());
             result =
                 await
                     context.AcquireTokenAsync(TestConstants.DefaultResource, TestConstants.DefaultClientId,
