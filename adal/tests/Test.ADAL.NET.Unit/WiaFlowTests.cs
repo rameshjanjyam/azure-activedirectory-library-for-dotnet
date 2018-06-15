@@ -26,52 +26,20 @@
 //------------------------------------------------------------------------------
 
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Net.Http;
 using System.Threading.Tasks;
-using Microsoft.Identity.Core;
-using Microsoft.Identity.Core.Cache;
 using Microsoft.IdentityModel.Clients.ActiveDirectory;
-using Microsoft.IdentityModel.Clients.ActiveDirectory.Internal;
-using Microsoft.IdentityModel.Clients.ActiveDirectory.Internal.Cache;
 using Microsoft.IdentityModel.Clients.ActiveDirectory.Internal.Http;
-using Microsoft.IdentityModel.Clients.ActiveDirectory.Internal.OAuth2;
-using Microsoft.IdentityModel.Clients.ActiveDirectory.Internal.Platform;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Test.ADAL.NET.Common;
 using Test.ADAL.NET.Common.Mocks;
 
 namespace Test.ADAL.NET.Unit
 {
-    /// <summary>
-    /// This test class executes and validates OBO scenarios where token cache may or may not 
-    /// contain entries with user assertion hash. It accounts for cases where there is
-    /// a single user and when there are multiple users in the cache.
-    /// user assertion hash exists so that the API can deterministically identify the user
-    /// in the cache when a usernae is not passed in. It also allows the API to acquire
-    /// new token when a different assertion is passed for the user. this is needed because
-    /// the user may have authenticated with updated claims like MFA/device auth on the client.
-    /// </summary>
     [TestClass]
     public class WiaFlowTests
     {
-        private readonly DateTimeOffset _expirationTime = DateTimeOffset.UtcNow + TimeSpan.FromMinutes(30);
-        private static readonly string[] _cacheNoise = { "", "different" };
-
-        [TestInitialize]
-        public void TestInitialize()
-        {
-            //HttpMessageHandlerFactory.InitializeMockProvider();
-            ResetInstanceDiscovery();
-        }
-
-        protected void ResetInstanceDiscovery()
-        {
-            InstanceDiscovery.InstanceCache.Clear();
-            HttpMessageHandlerFactory.AddMockHandler(MockHelpers.CreateInstanceDiscoveryMockHandler(TestConstants.GetDiscoveryEndpoint(TestConstants.DefaultAuthorityCommonTenant)));
-        }
-
+        // This can be run individually to test the functionality for real,
+        // but it won't work when running all test cases, because that way it will somehow still try to consume a nonexistent mock
         [TestMethod]
         [TestCategory("WiaFlowTests")]
         public async Task TestWia_WhenMethodIsCalled_ShouldReturnToken()  // This is currently a happy path real world test
