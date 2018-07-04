@@ -44,26 +44,7 @@ namespace Microsoft.Identity.Client.Internal.Requests
             : base(authenticationRequestParameters)
         {
             UserCred = userCred;
-            // TBD: Do we actually need to use userCred to populate the DisplayableId inside authenticationRequestParameters?
         }
-
-        /*
-        internal override async Task PreTokenRequest()
-        {
-            await base.PreTokenRequest().ConfigureAwait(false);
-
-            // look for access token in the cache first.
-            // no access token is found, then it means token does not exist
-            // or new assertion has been passed. We should not use Refresh Token
-            // for the user because the new incoming token may have updated claims
-            // like mfa etc.
-            if (LoadFromCache)
-            {
-                MsalAccessTokenItem
-                    = TokenCache.FindAccessToken(AuthenticationRequestParameters);
-            }
-        }
-        */
 
         protected override async Task SendTokenRequestAsync()
         {
@@ -89,8 +70,6 @@ namespace Microsoft.Identity.Client.Internal.Requests
                                      UserCred.UserName);
                     AuthenticationRequestParameters.RequestContext.Logger.VerbosePii(piiMsg);
                 }
-
-                //this.DisplayableId = userCredential.UserName;
             }
             if (AuthenticationRequestParameters.Authority.AuthorityType != Core.Instance.AuthorityType.Adfs)
             {
@@ -156,7 +135,6 @@ namespace Microsoft.Identity.Client.Internal.Requests
                 }
                 else if (string.Compare(userRealmResponse.AccountType, "managed", StringComparison.OrdinalIgnoreCase) == 0)
                 {
-                    // We do not need to do anything here. The Username-password grant will be handled later
                     /*
                     // handle password grant flow for the managed user
                     if (UserCred.PasswordToCharArray() == null)
