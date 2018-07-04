@@ -38,15 +38,17 @@ using System.Xml;
 using System.Xml.Linq;
 using System.Xml.Schema;
 using Microsoft.Identity.Core;
+using Microsoft.Identity.Client;
 using Microsoft.Identity.Core.Http;
 using Microsoft.Identity.Core.WsTrust;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
+using Test.Microsoft.Identity.Core.Unit;
 using Test.Microsoft.Identity.Unit.Mocks;
 
 namespace Test.Microsoft.Identity.Unit.WsTrustTests
 {
     [TestClass]
-    [DeploymentItem("WsTrustResponse13.xml")]
+    [DeploymentItem(@"Resources\WsTrustResponse13.xml")]
     public class WsTrustTests
     {
         [TestMethod]
@@ -156,5 +158,41 @@ namespace Test.Microsoft.Identity.Unit.WsTrustTests
             Assert.IsTrue(HttpMessageHandlerFactory.IsMocksQueueEmpty, "All mocks should have been consumed");
         }
 
+        [TestMethod]
+        [Description("WsTrustRequest encounters HTTP 404")]
+        public async Task WsTrustRequestFailureTestAsync()
+        {
+            HttpClientFactory.ReturnHttpClientForMocks = true;
+            HttpMessageHandlerFactory.ClearMockHandlers();
+
+            string URI = "https://some/address/usernamemixed";
+            WsTrustAddress address = new WsTrustAddress()
+            {
+                Uri = new Uri(URI),
+                Version = WsTrustVersion.WsTrust13
+            };
+
+            HttpMessageHandlerFactory.AddMockHandler(new MockHttpMessageHandler()
+            {
+                Url = URI,
+                Method = HttpMethod.Post,
+                ResponseMessage = new HttpResponseMessage(HttpStatusCode.NotFound)
+                {
+                    Content = new StringContent("Not found")
+                }
+            });
+
+            var requestContext = new RequestContext(new TestLogger(Guid.NewGuid(), null));
+            try
+            {
+                await WsTrustRequest.SendRequestAsync(address, new UserCred("username"), requestContext, "urn:federation:SomeAudience");
+                Assert.Fail("We expect an exception to be thrown here");
+            }
+            catch (MsalException ex)
+            {
+                Assert.AreEqual(MsalError.FederatedServiceReturnedError, ex.ErrorCode);
+            }
+            Assert.IsTrue(HttpMessageHandlerFactory.IsMocksQueueEmpty, "All mocks should have been consumed");
+        }
     }
 }
