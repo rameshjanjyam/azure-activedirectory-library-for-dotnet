@@ -42,7 +42,7 @@ using System;
 namespace Test.Microsoft.Identity.Unit.WsTrustTests
 {
     [TestClass]
-    [DeploymentItem("TestMex2005.xml")]
+    [DeploymentItem(@"Resources\TestMex2005.xml")]
     public class MexParserTests
     {
         [TestMethod]
